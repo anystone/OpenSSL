@@ -152,7 +152,7 @@ build()
 }
 
 # Clean up whatever was left from our previous build
-# rm -rf "${OPENSSL_BUILD_TMP_DIR}"
+rm -rf "${OPENSSL_BUILD_TMP_DIR}"
 
 if [ "${INSTALL_PREFIX}" != "" ]
 then
