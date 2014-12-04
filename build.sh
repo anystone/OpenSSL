@@ -88,16 +88,18 @@ build()
 
    mkdir -p "${OPENSSL_BUILD_TMP_DIR}/lib-${TYPE}"
 
-   if [ -d "${OPENSSL_BUILD_TMP_DIR}/openssl-${OPENSSL_VERSION}" ]
+   OPENSSL_VERSION_BUILD_DIR="${OPENSSL_BUILD_TMP_DIR}/openssl-${OPENSSL_VERSION}"
+
+   if [ -d "${OPENSSL_VERSION_BUILD_DIR}" ]
    then
       set +e
-      make clean &> "${OPENSSL_BUILD_TMP_DIR}/openssl-${OPENSSL_VERSION}-${ARCH}.log"
+      make -C "${OPENSSL_VERSION_BUILD_DIR}" clean &> "${OPENSSL_BUILD_TMP_DIR}/openssl-${OPENSSL_VERSION}-${ARCH}.log"
       set -e
    else
-	   tar xfz "${OPENSSL_TAR_BALL_DIR}/openssl-${OPENSSL_VERSION}.tar.gz"
+	   tar -xzf "${OPENSSL_TAR_BALL_DIR}/openssl-${OPENSSL_VERSION}.tar.gz" -C "${OPENSSL_BUILD_TMP_DIR}"
    fi
    pushd .
-   cd "openssl-${OPENSSL_VERSION}"
+   cd "${OPENSSL_VERSION_BUILD_DIR}"
 
    #fix header for Swift
 
@@ -139,7 +141,6 @@ build()
    make build_libs build_apps openssl.pc libssl.pc libcrypto.pc &> "${OPENSSL_BUILD_TMP_DIR}/openssl-${OPENSSL_VERSION}-${ARCH}.log"
    make install_sw &> "${OPENSSL_BUILD_TMP_DIR}/openssl-${OPENSSL_VERSION}-${ARCH}.log"
    popd
-   rm -rf "openssl-${OPENSSL_VERSION}"
 
    # Add arch to library
    if [ -f "${OPENSSL_BUILD_TMP_DIR}/lib-${TYPE}/libcrypto.a" ]; then
