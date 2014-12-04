@@ -70,13 +70,12 @@ then
 	exit -1
 fi
 
-if [ $BUILD_IOS -eq 0 && $BUILD_OSX -eq 0 ]
+if [ $BUILD_IOS -eq 0 ] && [ $BUILD_OSX -eq 0 ]
 then
 	echo "Must specify at least one build type, iOS or OSX."
 	echo "Use the -h option to show help."
 	exit -1
 fi
-
 
 build()
 {
@@ -89,8 +88,14 @@ build()
 
    mkdir -p "${OPENSSL_BUILD_TMP_DIR}/lib-${TYPE}"
 
-   rm -rf "${OPENSSL_BUILD_TMP_DIR}/openssl-${OPENSSL_VERSION}"
-   tar xfz "${OPENSSL_TAR_BALL_DIR}/openssl-${OPENSSL_VERSION}.tar.gz"
+   if [ -d "${OPENSSL_BUILD_TMP_DIR}/openssl-${OPENSSL_VERSION}" ]
+   then
+      set +e
+      make clean &> "${OPENSSL_BUILD_TMP_DIR}/openssl-${OPENSSL_VERSION}-${ARCH}.log"
+      set -e
+   else
+	   tar xfz "${OPENSSL_TAR_BALL_DIR}/openssl-${OPENSSL_VERSION}.tar.gz"
+   fi
    pushd .
    cd "openssl-${OPENSSL_VERSION}"
 
@@ -147,7 +152,7 @@ build()
 }
 
 # Clean up whatever was left from our previous build
-rm -rf "${OPENSSL_BUILD_TMP_DIR}"
+# rm -rf "${OPENSSL_BUILD_TMP_DIR}"
 
 if [ "${INSTALL_PREFIX}" != "" ]
 then
@@ -166,7 +171,7 @@ then
 	if [ "${INSTALL_PREFIX}" != "" ]
 	then
 		cp -rf "${OPENSSL_BUILD_TMP_DIR}/openssl-${OPENSSL_VERSION}-i386/include/openssl" "${INSTALL_PREFIX}/include/"
-		cp -f "${OPENSSL_BUILD_TMP_DIR}/lib-ios/*.a" "${INSTALL_PREFIX}/lib/"
+		cp -f "${OPENSSL_BUILD_TMP_DIR}/lib-ios/"*.a "${INSTALL_PREFIX}/lib/"
 	else
 		mkdir -p "${OPENSSL_BUILD_TMP_DIR}/include-ios"
 		cp -r "${OPENSSL_BUILD_TMP_DIR}/openssl-${OPENSSL_VERSION}-i386/include/openssl" "${OPENSSL_BUILD_TMP_DIR}/include-ios/"
@@ -181,7 +186,7 @@ then
 	if [ "${INSTALL_PREFIX}" != "" ]
 	then
 		cp -rf "${OPENSSL_BUILD_TMP_DIR}/openssl-${OPENSSL_VERSION}-i386/include/openssl" "${INSTALL_PREFIX}/include/"
-		cp -f "${OPENSSL_BUILD_TMP_DIR}/lib-osx/*.a" "${INSTALL_PREFIX}/lib/"
+		cp -f "${OPENSSL_BUILD_TMP_DIR}/lib-osx/"*.a "${INSTALL_PREFIX}/lib/"
 	else
 		mkdir -p "${OPENSSL_BUILD_TMP_DIR}/include-osx"
 		cp -r "${OPENSSL_BUILD_TMP_DIR}/openssl-${OPENSSL_VERSION}-i386/include/openssl" "${OPENSSL_BUILD_TMP_DIR}/include-osx/"
