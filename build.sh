@@ -136,8 +136,8 @@ build()
       fi
    fi
 
-   make &> "${OPENSSL_BUILD_TMP_DIR}/openssl-${OPENSSL_VERSION}-${ARCH}.log"
-   make install &> "${OPENSSL_BUILD_TMP_DIR}/openssl-${OPENSSL_VERSION}-${ARCH}.log"
+   make build_libs build_apps openssl.pc libssl.pc libcrypto.pc &> "${OPENSSL_BUILD_TMP_DIR}/openssl-${OPENSSL_VERSION}-${ARCH}.log"
+   make install_sw &> "${OPENSSL_BUILD_TMP_DIR}/openssl-${OPENSSL_VERSION}-${ARCH}.log"
    popd
    rm -rf "openssl-${OPENSSL_VERSION}"
 
